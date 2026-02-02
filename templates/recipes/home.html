@@ -1,46 +1,272 @@
 {% extends 'base.html' %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Home - Recipe Sharing Community{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-8">
-        <h1>Latest Recipes</h1>
-        <div class="row">
-            {% for recipe in recipes %}
-            <div class="col-md-6 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ recipe.title }}</h5>
-                        <p class="card-text">{{ recipe.description|truncatechars:100 }}</p>
-                        <p class="card-text"><small class="text-muted">By {{ recipe.author.username }}</small></p>
-                        {% if recipe.category %}
-                        <span class="badge bg-secondary">{{ recipe.category.name }}</span>
-                        {% endif %}
-                        <a href="{% url 'recipe_detail' recipe.pk %}" class="btn btn-primary mt-2">View Recipe</a>
-                    </div>
-                </div>
+<!-- Hero Section -->
+<div class="page-header text-center mb-5">
+    <h1 class="display-4 mb-3">Welcome to Recipe Sharing</h1>
+    <p class="lead text-muted mb-4">Discover, create, and share delicious recipes with our community</p>
+    {% if not user.is_authenticated %}
+    <a href="{% url 'register' %}" class="btn btn-primary btn-lg">
+        <i class="fas fa-arrow-right me-2"></i>Get Started
+    </a>
+    {% else %}
+    <p class="text-muted mb-3">Hello, <strong>{{ user.first_name|default:user.username }}</strong>! Ready to cook something amazing?</p>
+    <a href="{% url 'create_recipe' %}" class="btn btn-success btn-lg">
+        <i class="fas fa-plus me-2"></i>Create a Recipe
+    </a>
+    {% endif %}
+</div>
+
+<!-- Statistics Banner -->
+<div class="row mb-5 g-3">
+    <div class="col-md-6 col-lg-3">
+        <div class="stats-card">
+            <div class="stats-label">
+                <i class="fas fa-utensils me-2"></i>Total Recipes
             </div>
-            {% endfor %}
+            <div class="stats-value">{{ recipes_count }}</div>
         </div>
     </div>
-    <div class="col-md-4">
-        <h3>Categories</h3>
-        <div class="list-group">
-            {% for category in categories %}
-            <a href="{% url 'category_detail' category.pk %}" class="list-group-item list-group-item-action">
-                {{ category.name }}
-                <span class="badge bg-primary rounded-pill">{{ category.recipe_set.count }}</span>
-            </a>
-            {% endfor %}
+    <div class="col-md-6 col-lg-3">
+        <div class="stats-card blue">
+            <div class="stats-label">
+                <i class="fas fa-users me-2"></i>Active Users
+            </div>
+            <div class="stats-value">{{ users_count }}</div>
         </div>
-        
-        <h3 class="mt-4">Popular Tags</h3>
-        <div class="d-flex flex-wrap gap-1">
-            {% for tag in tags %}
-            <span class="badge bg-info">{{ tag.name }}</span>
-            {% endfor %}
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="stats-card warning">
+            <div class="stats-label">
+                <i class="fas fa-folder me-2"></i>Categories
+            </div>
+            <div class="stats-value">{{ categories_count }}</div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="stats-card danger">
+            <div class="stats-label">
+                <i class="fas fa-tags me-2"></i>Tags
+            </div>
+            <div class="stats-value">{{ tags_count }}</div>
         </div>
     </div>
 </div>
+
+<div class="row">
+    <!-- Main Content -->
+    <div class="col-md-8">
+        <!-- Latest Recipes Section -->
+        <div class="mb-4">
+            <h2>📚 Latest Recipes</h2>
+            {% if recipes %}
+                <div class="row">
+                    {% for recipe in recipes %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100 shadow-sm hover-shadow transition">
+                            <!-- Recipe Image or Placeholder -->
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 180px; display: flex; align-items: center; justify-content: center; color: white;">
+                                <span class="fs-1">🍽️</span>
+                            </div>
+                            
+                            <div class="card-body">
+                                <!-- Title -->
+                                <h5 class="card-title">{{ recipe.title|truncatewords:5 }}</h5>
+                                
+                                <!-- Metadata -->
+                                <div class="mb-2">
+                                    <small class="text-muted">
+                                        👨‍🍳 By <strong>{{ recipe.author.username }}</strong>
+                                    </small>
+                                    <br>
+                                    <small class="text-muted">
+                                        📅 {{ recipe.created_at|date:"M d, Y" }}
+                                    </small>
+                                </div>
+                                
+                                <!-- Description -->
+                                <p class="card-text text-truncate">{{ recipe.description|truncatechars:80 }}</p>
+                                
+                                <!-- Recipe Stats -->
+                                <div class="mb-2">
+                                    {% if recipe.prep_time or recipe.cook_time %}
+                                    <small class="badge bg-light text-dark">
+                                        ⏱️ {% if recipe.prep_time %}{{ recipe.prep_time }}m prep{% endif %}
+                                        {% if recipe.cook_time %}+ {{ recipe.cook_time }}m cook{% endif %}
+                                    </small>
+                                    {% endif %}
+                                    
+                                    {% if recipe.servings %}
+                                    <small class="badge bg-light text-dark">
+                                        🍽️ {{ recipe.servings }} servings
+                                    </small>
+                                    {% endif %}
+                                    
+                                    {% if recipe.difficulty %}
+                                    <small class="badge
+                                        {% if recipe.difficulty == 'easy' %}bg-success
+                                        {% elif recipe.difficulty == 'medium' %}bg-warning
+                                        {% else %}bg-danger
+                                        {% endif %}
+                                    ">
+                                        {{ recipe.get_difficulty_display }}
+                                    </small>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Category -->
+                                {% if recipe.category %}
+                                <p class="mb-2">
+                                    <span class="badge bg-secondary">{{ recipe.category.name }}</span>
+                                </p>
+                                {% endif %}
+                                
+                                <!-- Tags -->
+                                {% if recipe.tags.all %}
+                                <p class="mb-2">
+                                    {% for tag in recipe.tags.all %}
+                                        <span class="badge bg-info text-dark">{{ tag.name }}</span>
+                                    {% endfor %}
+                                </p>
+                                {% endif %}
+                                
+                                <!-- Engagement -->
+                                <div class="mb-2 text-muted small">
+                                    👁️ {{ recipe.views_count }} views | ❤️ {{ recipe.likes_count }} likes
+                                    {% if recipe.ratings.count > 0 %}
+                                    | ⭐ {{ recipe.get_average_rating|floatformat:1 }}/5 ({{ recipe.ratings.count }})
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Action Button -->
+                                <a href="{% url 'recipe_detail' recipe.pk %}" class="btn btn-primary btn-sm w-100">
+                                    View Recipe →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info" role="alert">
+                    <strong>No recipes yet!</strong> Be the first to share your favorite recipe.
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'create_recipe' %}" class="alert-link">Create one now</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <!-- Categories Section -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">📂 Categories</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if categories %}
+                    <div class="list-group list-group-flush">
+                        {% for category in categories %}
+                        <a href="{% url 'category_detail' category.pk %}" 
+                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <span>{{ category.name }}</span>
+                            <span class="badge bg-primary rounded-pill">{{ category.recipes.count }}</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted p-3">No categories available</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Popular Tags Section -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">🏷️ Popular Tags</h5>
+            </div>
+            <div class="card-body">
+                {% if tags %}
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for tag in tags %}
+                            <span class="badge bg-info text-dark">
+                                {{ tag.name }}
+                                <span class="badge bg-light text-dark">{{ tag.recipes.count }}</span>
+                            </span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No tags available</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- User Info Section (if authenticated) -->
+        {% if user.is_authenticated %}
+        <div class="card mt-4 shadow-sm border-success">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">👤 Your Profile</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-1"><strong>{{ user.first_name|default:user.username }}</strong></p>
+                <p class="text-muted small mb-3">{{ user.email }}</p>
+                <a href="{% url 'profile' user.username %}" class="btn btn-success btn-sm w-100">
+                    View Full Profile
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Pagination (if applicable) -->
+{% if recipes.has_other_pages %}
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if recipes.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page=1">First</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ recipes.previous_page_number }}">Previous</a>
+        </li>
+        {% endif %}
+
+        <!-- Page Numbers -->
+        {% for num in recipes.paginator.page_range %}
+            {% if recipes.number == num %}
+            <li class="page-item active">
+                <span class="page-link">{{ num }}</span>
+            </li>
+            {% elif num > recipes.number|add:'-3' and num < recipes.number|add:'3' %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if recipes.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ recipes.next_page_number }}">Next</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ recipes.paginator.num_pages }}">Last</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+<style>
+.hover-shadow.transition {
+    transition: box-shadow 0.3s ease;
+}
+.hover-shadow.transition:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+</style>
 {% endblock %}

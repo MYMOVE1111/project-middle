@@ -1,14 +1,152 @@
 {% extends 'base.html' %}
 
-{% block title %}Categories{% endblock %}
+{% block title %}Recipe Categories - Browse by Type{% endblock %}
 
 {% block content %}
-<h1>Recipe Categories</h1>
-<ul class="list-group">
-    {% for category in categories %}
-    <li class="list-group-item">
-        <a href="{% url 'category_detail' category.pk %}">{{ category.name }}</a>
-    </li>
-    {% endfor %}
-</ul>
+<!-- Page Header -->
+<div class="mb-5">
+    <h1 class="display-4 mb-2">🏷️ Recipe Categories</h1>
+    <p class="lead text-muted">Browse delicious recipes organized by category</p>
+</div>
+
+<!-- Categories Grid -->
+{% if categories %}
+    <div class="row mb-4">
+        {% for category in categories %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm hover-lift transition">
+                <!-- Category Header with Icon -->
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{{ category.name }}</h5>
+                    <span class="badge bg-light text-primary">{{ category.recipes.count }}</span>
+                </div>
+
+                <!-- Category Info -->
+                <div class="card-body">
+                    <!-- Description -->
+                    {% if category.description %}
+                    <p class="card-text text-muted small">
+                        {{ category.description|truncatechars:100 }}
+                    </p>
+                    {% endif %}
+
+                    <!-- Recipes in Category -->
+                    <div class="mb-3">
+                        <h6 class="text-secondary">📚 Recent Recipes</h6>
+                        {% with category.recipes.all|slice:":3" as recent_recipes %}
+                            {% if recent_recipes %}
+                            <ul class="small list-unstyled">
+                                {% for recipe in recent_recipes %}
+                                <li class="mb-2">
+                                    <a href="{% url 'recipe_detail' recipe.pk %}" class="text-decoration-none">
+                                        • {{ recipe.title|truncatewords:3 }}
+                                    </a>
+                                    <br>
+                                    <small class="text-muted">by {{ recipe.author.username }}</small>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            {% if category.recipes.count > 3 %}
+                            <small class="text-muted">... and {{ category.recipes.count|add:"-3" }} more</small>
+                            {% endif %}
+                            {% else %}
+                            <p class="text-muted small">No recipes yet in this category</p>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+
+                    <!-- Statistics -->
+                    <div class="d-flex justify-content-between text-muted small border-top pt-2">
+                        <span>📊 {{ category.recipes.count }} recipe{{ category.recipes.count|pluralize }}</span>
+                        <span>⭐ {% if category.recipes.count > 0 %}{{ category.recipes.count }} recipe{{ category.recipes.count|pluralize }}{% else %}No ratings{% endif %}</span>
+                    </div>
+                </div>
+
+                <!-- View Button -->
+                <div class="card-footer bg-light">
+                    <a href="{% url 'category_detail' category.pk %}" class="btn btn-primary btn-sm w-100">
+                        View All Recipes →
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <!-- No Categories Message -->
+    <div class="alert alert-info" role="alert">
+        <h4 class="alert-heading">No Categories Yet</h4>
+        <p>There are currently no recipe categories available. Come back soon!</p>
+    </div>
+{% endif %}
+
+<!-- Category Statistics Summary -->
+{% if categories %}
+<div class="row mt-5 mb-4">
+    <div class="col-md-12">
+        <h3 class="mb-4">📊 Category Statistics</h3>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title text-primary">{{ categories.count }}</h5>
+                <p class="card-text">Total Categories</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                {% with total_recipes=categories.0 %}
+                    {% for category in categories %}
+                        {% if forloop.first %}
+                        <h5 class="card-title text-success">{% for c in categories %}{{ c.recipes.count }}{% if not forloop.last %}+{% endif %}{% endfor %}</h5>
+                        {% endif %}
+                    {% endfor %}
+                    <p class="card-text">Total Recipes</p>
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                {% with avg_recipes=categories|length %}
+                    <h5 class="card-title text-info">{{ avg_recipes }} avg</h5>
+                    <p class="card-text">Recipes per Category</p>
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                {% with most_popular=categories|first %}
+                    <h5 class="card-title text-warning">{{ most_popular.name }}</h5>
+                    <p class="card-text">Most Popular</p>
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Breadcrumb Navigation -->
+<nav aria-label="breadcrumb" class="mt-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Categories</li>
+    </ol>
+</nav>
+{% endif %}
+
+<!-- Styles -->
+<style>
+.hover-lift.transition {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.hover-lift.transition:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+</style>
 {% endblock %}

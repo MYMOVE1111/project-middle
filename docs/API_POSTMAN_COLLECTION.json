@@ -1,0 +1,355 @@
+{
+  "info": {
+    "_postman_id": "recipe-api-collection",
+    "name": "Recipe Sharing API",
+    "description": "Complete API collection for the Django Recipe Sharing Application",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Recipes",
+      "item": [
+        {
+          "name": "List All Recipes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/recipes/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recipes", ""]
+            },
+            "description": "Get all recipes (paginated)"
+          }
+        },
+        {
+          "name": "Get Recipe by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/recipes/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recipes", "1", ""]
+            },
+            "description": "Get detailed information about a specific recipe"
+          }
+        },
+        {
+          "name": "Create Recipe",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Homemade Pizza\",\n  \"description\": \"Delicious homemade pizza with fresh toppings\",\n  \"ingredients\": \"Flour, Tomato sauce, Mozzarella cheese, Basil, Olive oil\",\n  \"instructions\": \"1. Make dough 2. Add sauce 3. Add toppings 4. Bake at 400F for 20 minutes\",\n  \"category_id\": 1,\n  \"prep_time\": 30,\n  \"cook_time\": 20,\n  \"servings\": 4,\n  \"difficulty\": \"medium\",\n  \"published\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/recipes/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recipes", ""]
+            },
+            "description": "Create a new recipe (authentication required)"
+          }
+        },
+        {
+          "name": "Search Recipes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/recipes/?search=pasta",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recipes", ""],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "pasta"
+                }
+              ]
+            },
+            "description": "Search recipes by title, description, or ingredients"
+          }
+        },
+        {
+          "name": "Filter by Difficulty",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/recipes/?difficulty=easy",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recipes", ""],
+              "query": [
+                {
+                  "key": "difficulty",
+                  "value": "easy"
+                }
+              ]
+            },
+            "description": "Filter recipes by difficulty level"
+          }
+        },
+        {
+          "name": "Filter by Category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/recipes/?category=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recipes", ""],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Filter recipes by category"
+          }
+        },
+        {
+          "name": "Get Recipe Comments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/recipes/1/comments/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recipes", "1", "comments", ""]
+            },
+            "description": "Get all comments for a recipe"
+          }
+        },
+        {
+          "name": "Add Comment to Recipe",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"This recipe is amazing! I made it for dinner.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/recipes/1/add_comment/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recipes", "1", "add_comment", ""]
+            },
+            "description": "Add a comment to a recipe (authentication required)"
+          }
+        },
+        {
+          "name": "Get Recipe Ratings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/recipes/1/ratings/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recipes", "1", "ratings", ""]
+            },
+            "description": "Get all ratings for a recipe"
+          }
+        },
+        {
+          "name": "Add Rating to Recipe",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"score\": 5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/recipes/1/add_rating/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recipes", "1", "add_rating", ""]
+            },
+            "description": "Add or update a rating for a recipe (authentication required)"
+          }
+        },
+        {
+          "name": "Get Average Rating",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/recipes/1/average_rating/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recipes", "1", "average_rating", ""]
+            },
+            "description": "Get average rating for a recipe"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "List All Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/categories/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "categories", ""]
+            },
+            "description": "Get all recipe categories"
+          }
+        },
+        {
+          "name": "Get Category by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/categories/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "categories", "1", ""]
+            },
+            "description": "Get details of a specific category"
+          }
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Desserts\",\n  \"description\": \"Sweet dessert recipes\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/categories/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "categories", ""]
+            },
+            "description": "Create a new category (authentication required)"
+          }
+        },
+        {
+          "name": "Get Category Recipes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/categories/1/recipes/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "categories", "1", "recipes", ""]
+            },
+            "description": "Get all recipes in a category"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comments",
+      "item": [
+        {
+          "name": "List All Comments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/comments/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "comments", ""]
+            },
+            "description": "Get all comments (paginated)"
+          }
+        },
+        {
+          "name": "Create Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipe\": 1,\n  \"text\": \"Excellent recipe! Made it for my family.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/comments/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "comments", ""]
+            },
+            "description": "Create a new comment (authentication required)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ratings",
+      "item": [
+        {
+          "name": "List All Ratings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/ratings/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ratings", ""]
+            },
+            "description": "Get all ratings (paginated)"
+          }
+        },
+        {
+          "name": "Create Rating",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipe\": 1,\n  \"score\": 4\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ratings/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ratings", ""]
+            },
+            "description": "Create a new rating (authentication required)"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000"
+    }
+  ]
+}
