@@ -285,7 +285,7 @@ main.container {
 .card-body .d-flex.flex-wrap {
     display: flex !important;
     flex-wrap: wrap !important;
-    gap: 0.25rem !important;
+    gap: 1rem !important;
     align-items: center !important;
 }
 
@@ -566,7 +566,7 @@ textarea.form-control {
 .list-group-item {
     border: none;
     border-bottom: 1px solid var(--light);
-    padding: var(--spacing-lg);
+    padding: var(--spacing-xl) var(--spacing-lg);
     transition: var(--transition-fast);
 }
 
@@ -919,6 +919,106 @@ textarea.form-control {
     border-radius: var(--border-radius) !important;
     font-size: 0.85rem !important;
     font-weight: 600 !important;
+}
+
+/* Отступ сверху для блока Categories в сайдбаре */
+.sidebar-categories-card {
+    margin-top: 2rem !important;
+}
+
+/* Компактный вид панелей Categories и Popular Tags */
+.sidebar-categories-card .card-header {
+    padding: 0.4rem 0.75rem !important;
+}
+.sidebar-categories-card .card-header h5 {
+    font-size: 0.95rem !important;
+}
+.sidebar-categories-card .list-group-item {
+    padding: 0.4rem 0.75rem !important;
+    font-size: 0.9rem !important;
+}
+.sidebar-categories-card .list-group-item .badge {
+    font-size: 0.7rem !important;
+    padding: 0.2em 0.5em !important;
+}
+.sidebar-categories-card .list-group-item:hover {
+    padding-left: 0.9rem !important;
+}
+.sidebar-categories-card.mb-4 {
+    margin-bottom: 1rem !important;
+}
+
+.sidebar-tags-section .card-header {
+    padding: 0.4rem 0.75rem !important;
+}
+.sidebar-tags-section .card-header h5 {
+    font-size: 0.95rem !important;
+}
+.sidebar-tags-section .card-body {
+    padding: 0.5rem 0.75rem !important;
+}
+.sidebar-tags-section .d-flex.flex-wrap {
+    gap: 0.35rem !important;
+}
+.sidebar-tags-section .badge.bg-info {
+    font-size: 0.75rem !important;
+    padding: 0.25em 0.5em !important;
+}
+.sidebar-tags-section .badge.bg-info .badge.bg-light {
+    font-size: 0.65rem !important;
+    padding: 0.15em 0.4em !important;
+}
+
+/* Отступ между блоком "Категории" и блоком "Popular Tags" */
+.sidebar-tags-section {
+    margin-top: 1rem !important;
+}
+
+.sidebar-tags-section .badge[href]:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+}
+
+/* ============================================================
+   RECIPE DETAIL PAGE - отступы
+   ============================================================ */
+
+.recipe-detail-page .recipe-stats-row .recipe-stat-card {
+    padding: var(--spacing-md) !important;
+}
+
+.recipe-detail-page .recipe-tags-row .badge {
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.recipe-detail-page .recipe-comment-card {
+    padding: var(--spacing-md) !important;
+}
+
+.recipe-detail-page .recipe-comment-card .card-body {
+    padding: var(--spacing-lg) !important;
+}
+
+.recipe-detail-page .col-md-4 .card {
+    margin-bottom: 1.5rem !important;
+}
+
+.recipe-detail-page .col-md-4 .card:last-child {
+    margin-bottom: 0 !important;
+}
+
+.recipe-detail-page .card-body {
+    padding: var(--spacing-lg) !important;
+}
+
+/* Большие отступы между блоками Description, Ingredients, Instructions */
+.recipe-detail-page .col-md-8 .recipe-content-card {
+    margin-bottom: 2.5rem !important;
+}
+
+.recipe-detail-page .col-md-8 .recipe-content-card:last-child {
+    margin-bottom: 0 !important;
 }
 
 /* ============================================================

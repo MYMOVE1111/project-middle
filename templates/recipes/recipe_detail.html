@@ -3,6 +3,14 @@
 {% block title %}{{ recipe.title }} - Recipe Sharing{% endblock %}
 
 {% block content %}
+<div class="recipe-detail-page">
+<!-- Recipe Image (if set) -->
+{% if recipe.image %}
+<div class="mb-4">
+    <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="img-fluid rounded shadow-sm" style="max-height: 400px; width: 100%; object-fit: cover;">
+</div>
+{% endif %}
+
 <!-- Recipe Header -->
 <div class="row mb-4">
     <div class="col-md-8">
@@ -39,11 +47,11 @@
         {% endif %}
 
         <!-- Recipe Stats Row -->
-        <div class="row g-2 mb-4">
+        <div class="row g-4 mb-4 recipe-stats-row">
             {% if recipe.difficulty %}
             <div class="col-md-3">
                 <div class="card bg-light">
-                    <div class="card-body p-2">
+                    <div class="card-body recipe-stat-card p-3">
                         <small class="text-muted">Difficulty</small>
                         <p class="mb-0">
                             <strong>
@@ -64,7 +72,7 @@
             {% if recipe.prep_time or recipe.cook_time %}
             <div class="col-md-3">
                 <div class="card bg-light">
-                    <div class="card-body p-2">
+                    <div class="card-body recipe-stat-card p-3">
                         <small class="text-muted">Total Time</small>
                         <p class="mb-0"><strong>⏱️ {{ recipe.get_total_time }} mins</strong></p>
                     </div>
@@ -75,7 +83,7 @@
             {% if recipe.servings %}
             <div class="col-md-3">
                 <div class="card bg-light">
-                    <div class="card-body p-2">
+                    <div class="card-body recipe-stat-card p-3">
                         <small class="text-muted">Servings</small>
                         <p class="mb-0"><strong>🍽️ {{ recipe.servings }}</strong></p>
                     </div>
@@ -86,7 +94,7 @@
             {% if recipe.ratings.count > 0 %}
             <div class="col-md-3">
                 <div class="card bg-light">
-                    <div class="card-body p-2">
+                    <div class="card-body recipe-stat-card p-3">
                         <small class="text-muted">Rating</small>
                         <p class="mb-0">
                             <strong>⭐ {{ recipe.get_average_rating|floatformat:1 }}/5</strong>
@@ -127,14 +135,14 @@
 
 <!-- Category and Tags -->
 {% if recipe.category or recipe.tags.all %}
-<div class="mb-4">
+<div class="mb-4 recipe-tags-row">
     {% if recipe.category %}
-    <span class="badge bg-primary fs-6">📂 {{ recipe.category.name }}</span>
+    <span class="badge bg-primary fs-6 me-2 mb-2">📂 {{ recipe.category.name }}</span>
     {% endif %}
     
     {% if recipe.tags.all %}
     {% for tag in recipe.tags.all %}
-        <span class="badge bg-info text-dark fs-6">🏷️ {{ tag.name }}</span>
+        <span class="badge bg-info text-dark fs-6 me-2 mb-2">🏷️ {{ tag.name }}</span>
     {% endfor %}
     {% endif %}
 </div>
@@ -145,34 +153,34 @@
     <div class="col-md-8">
         <!-- Description -->
         {% if recipe.description %}
-        <div class="card mb-4 shadow-sm">
+        <div class="card shadow-sm recipe-content-card">
             <div class="card-header bg-primary text-white">
                 <h5 class="mb-0">📝 Description</h5>
             </div>
             <div class="card-body">
-                <p>{{ recipe.description }}</p>
+                <p class="mb-0">{{ recipe.description }}</p>
             </div>
         </div>
         {% endif %}
 
         <!-- Ingredients -->
         {% if recipe.ingredients %}
-        <div class="card mb-4 shadow-sm">
+        <div class="card shadow-sm recipe-content-card">
             <div class="card-header bg-success text-white">
                 <h5 class="mb-0">🛒 Ingredients</h5>
             </div>
             <div class="card-body">
-                <ul class="list-group list-group-flush">
+                <ul class="list-group list-group-flush mb-0">
                     {{ recipe.ingredients|linebreaks }}
                 </ul>
-                <small class="text-muted d-block mt-2">💡 Check off ingredients as you gather them</small>
+                <small class="text-muted d-block mt-4">💡 Check off ingredients as you gather them</small>
             </div>
         </div>
         {% endif %}
 
         <!-- Instructions -->
         {% if recipe.instructions %}
-        <div class="card mb-4 shadow-sm">
+        <div class="card shadow-sm recipe-content-card">
             <div class="card-header bg-info text-white">
                 <h5 class="mb-0">👨‍🍳 Instructions</h5>
             </div>
@@ -183,19 +191,19 @@
         {% endif %}
 
         <!-- Comments Section -->
-        <div class="card mb-4 shadow-sm">
+        <div class="card shadow-sm recipe-content-card">
             <div class="card-header bg-warning text-dark">
                 <h5 class="mb-0">💬 Comments ({{ recipe.comments.count }})</h5>
             </div>
             <div class="card-body">
                 {% if recipe.comments.all %}
                     {% for comment in recipe.comments.all %}
-                    <div class="card mb-3 border-light">
+                    <div class="card mb-4 border-light recipe-comment-card">
                         <div class="card-body">
                             <!-- Comment Header -->
-                            <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div>
-                                    <h6 class="card-subtitle mb-1">
+                                    <h6 class="card-subtitle mb-2">
                                         <strong>{{ comment.user.username }}</strong>
                                     </h6>
                                     <small class="text-muted">
@@ -213,7 +221,7 @@
                             </div>
                             
                             <!-- Comment Text -->
-                            <p class="card-text">{{ comment.text }}</p>
+                            <p class="card-text mb-0 mt-2">{{ comment.text }}</p>
                         </div>
                     </div>
                     {% endfor %}
@@ -249,10 +257,10 @@
             </div>
             <div class="card-body">
                 {% if recipe.ratings.count > 0 %}
-                <div class="mb-3">
+                <div class="mb-4 recipe-rating-block">
                     <div class="text-center">
-                        <h3>{{ recipe.get_average_rating|floatformat:1 }}/5</h3>
-                        <small class="text-muted">Based on {{ recipe.ratings.count }} rating{{ recipe.ratings.count|pluralize }}</small>
+                        <h3 class="mb-2">{{ recipe.get_average_rating|floatformat:1 }}/5</h3>
+                        <small class="text-muted d-block mt-1">Based on {{ recipe.ratings.count }} rating{{ recipe.ratings.count|pluralize }}</small>
                     </div>
                 </div>
                 {% endif %}
@@ -287,9 +295,9 @@
             <div class="card-header bg-secondary text-white">
                 <h5 class="mb-0">👨‍🍳 Recipe Author</h5>
             </div>
-            <div class="card-body text-center">
-                <h6>{{ recipe.author.first_name|default:recipe.author.username }}</h6>
-                <p class="text-muted small mb-3">@{{ recipe.author.username }}</p>
+            <div class="card-body text-center recipe-author-card">
+                <h6 class="mb-2">{{ recipe.author.first_name|default:recipe.author.username }}</h6>
+                <p class="text-muted small mb-4 mt-1">@{{ recipe.author.username }}</p>
                 
                 {% if recipe.author.profile %}
                 <p class="small">{{ recipe.author.profile.bio|truncatechars:100 }}</p>
@@ -376,4 +384,5 @@
     <button type="submit" class="btn btn-primary">Comment</button>
 </form>
 {% endif %}
+</div><!-- .recipe-detail-page -->
 {% endblock %}

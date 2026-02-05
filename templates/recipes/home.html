@@ -19,6 +19,16 @@
     {% endif %}
 </div>
 
+<!-- Search -->
+<form action="{% url 'home' %}" method="get" class="mb-4">
+    <div class="input-group input-group-lg">
+        <input type="search" name="q" value="{{ search_query|default:'' }}" class="form-control" placeholder="Search recipes by title, description, ingredients..." aria-label="Search recipes">
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-search me-1"></i> Search
+        </button>
+    </div>
+</form>
+
 <!-- Statistics Banner -->
 <div class="row mb-5 g-3">
     <div class="col-md-6 col-lg-3">
@@ -60,16 +70,23 @@
     <div class="col-md-8">
         <!-- Latest Recipes Section -->
         <div class="mb-4">
-            <h2>📚 Latest Recipes</h2>
+            <h2>📚 {% if search_query %}Search results{% else %}Latest Recipes{% endif %}</h2>
+            {% if search_query %}
+            <p class="text-muted">Found {{ page_obj.paginator.count }} recipe{{ page_obj.paginator.count|pluralize }} for "{{ search_query }}".</p>
+            {% endif %}
             {% if recipes %}
                 <div class="row">
                     {% for recipe in recipes %}
                     <div class="col-md-6 mb-4">
                         <div class="card h-100 shadow-sm hover-shadow transition">
                             <!-- Recipe Image or Placeholder -->
+                            {% if recipe.image %}
+                            <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="card-img-top" style="height: 180px; object-fit: cover;">
+                            {% else %}
                             <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 180px; display: flex; align-items: center; justify-content: center; color: white;">
                                 <span class="fs-1">🍽️</span>
                             </div>
+                            {% endif %}
                             
                             <div class="card-body">
                                 <!-- Title -->
@@ -151,9 +168,13 @@
                 </div>
             {% else %}
                 <div class="alert alert-info" role="alert">
+                    {% if search_query %}
+                    <strong>No recipes found</strong> for "{{ search_query }}". Try different keywords or <a href="{% url 'home' %}" class="alert-link">view all recipes</a>.
+                    {% else %}
                     <strong>No recipes yet!</strong> Be the first to share your favorite recipe.
                     {% if user.is_authenticated %}
                     <a href="{% url 'create_recipe' %}" class="alert-link">Create one now</a>
+                    {% endif %}
                     {% endif %}
                 </div>
             {% endif %}
@@ -161,9 +182,9 @@
     </div>
 
     <!-- Sidebar -->
-    <div class="col-md-4">
+    <div class="col-md-4 sidebar-column">
         <!-- Categories Section -->
-        <div class="card mb-4 shadow-sm">
+        <div class="card mb-4 shadow-sm sidebar-categories-card">
             <div class="card-header bg-primary text-white">
                 <h5 class="mb-0">📂 Categories</h5>
             </div>
@@ -185,7 +206,7 @@
         </div>
 
         <!-- Popular Tags Section -->
-        <div class="card shadow-sm">
+        <div class="card shadow-sm sidebar-tags-section">
             <div class="card-header bg-success text-white">
                 <h5 class="mb-0">🏷️ Popular Tags</h5>
             </div>
@@ -193,10 +214,10 @@
                 {% if tags %}
                     <div class="d-flex flex-wrap gap-2">
                         {% for tag in tags %}
-                            <span class="badge bg-info text-dark">
+                            <a href="{% url 'tag_detail' tag.pk %}" class="badge bg-info text-dark text-decoration-none">
                                 {{ tag.name }}
                                 <span class="badge bg-light text-dark">{{ tag.recipes.count }}</span>
-                            </span>
+                            </a>
                         {% endfor %}
                     </div>
                 {% else %}
@@ -205,34 +226,20 @@
             </div>
         </div>
 
-        <!-- User Info Section (if authenticated) -->
-        {% if user.is_authenticated %}
-        <div class="card mt-4 shadow-sm border-success">
-            <div class="card-header bg-success text-white">
-                <h5 class="mb-0">👤 Your Profile</h5>
-            </div>
-            <div class="card-body">
-                <p class="mb-1"><strong>{{ user.first_name|default:user.username }}</strong></p>
-                <p class="text-muted small mb-3">{{ user.email }}</p>
-                <a href="{% url 'profile' user.username %}" class="btn btn-success btn-sm w-100">
-                    View Full Profile
-                </a>
-            </div>
-        </div>
-        {% endif %}
     </div>
 </div>
 
 <!-- Pagination (if applicable) -->
 {% if recipes.has_other_pages %}
+{% with query_string=search_query|default:"" %}
 <nav aria-label="Page navigation" class="mt-4">
     <ul class="pagination justify-content-center">
         {% if recipes.has_previous %}
         <li class="page-item">
-            <a class="page-link" href="?page=1">First</a>
+            <a class="page-link" href="?page=1{% if query_string %}&q={{ query_string|urlencode }}{% endif %}">First</a>
         </li>
         <li class="page-item">
-            <a class="page-link" href="?page={{ recipes.previous_page_number }}">Previous</a>
+            <a class="page-link" href="?page={{ recipes.previous_page_number }}{% if query_string %}&q={{ query_string|urlencode }}{% endif %}">Previous</a>
         </li>
         {% endif %}
 
@@ -244,21 +251,22 @@
             </li>
             {% elif num > recipes.number|add:'-3' and num < recipes.number|add:'3' %}
             <li class="page-item">
-                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                <a class="page-link" href="?page={{ num }}{% if query_string %}&q={{ query_string|urlencode }}{% endif %}">{{ num }}</a>
             </li>
             {% endif %}
         {% endfor %}
 
         {% if recipes.has_next %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ recipes.next_page_number }}">Next</a>
+            <a class="page-link" href="?page={{ recipes.next_page_number }}{% if query_string %}&q={{ query_string|urlencode }}{% endif %}">Next</a>
         </li>
         <li class="page-item">
-            <a class="page-link" href="?page={{ recipes.paginator.num_pages }}">Last</a>
+            <a class="page-link" href="?page={{ recipes.paginator.num_pages }}{% if query_string %}&q={{ query_string|urlencode }}{% endif %}">Last</a>
         </li>
         {% endif %}
     </ul>
 </nav>
+{% endwith %}
 {% endif %}
 
 <style>

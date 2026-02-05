@@ -5,11 +5,19 @@ from django.contrib.auth.models import User
 from django.contrib.auth import logout as auth_logout
 from .models import Recipe, Category, Tag, Comment, Rating, Profile
 from .forms import RecipeForm, CommentForm, RatingForm, ProfileForm
-from django.db.models import Avg, Count
+from django.db.models import Avg, Count, Q
 from django.core.paginator import Paginator
 
 def home(request):
     recipes = Recipe.objects.all().order_by('-created_at')
+    search_query = request.GET.get('q', '').strip()
+    if search_query:
+        recipes = recipes.filter(
+            Q(title__icontains=search_query) |
+            Q(description__icontains=search_query) |
+            Q(ingredients__icontains=search_query) |
+            Q(instructions__icontains=search_query)
+        )
     categories = Category.objects.all()
     tags = Tag.objects.all()
     
@@ -33,6 +41,7 @@ def home(request):
         'users_count': users_count,
         'categories_count': categories_count,
         'tags_count': tags_count,
+        'search_query': search_query,
     })
 
 def recipe_detail(request, pk):
@@ -122,6 +131,11 @@ def category_detail(request, pk):
     category = get_object_or_404(Category, pk=pk)
     recipes = category.recipe_set.all()
     return render(request, 'recipes/category_detail.html', {'category': category, 'recipes': recipes})
+
+def tag_detail(request, pk):
+    tag = get_object_or_404(Tag, pk=pk)
+    recipes = tag.recipes.all()
+    return render(request, 'recipes/tag_detail.html', {'tag': tag, 'recipes': recipes})
 
 @login_required
 def profile(request, username):
