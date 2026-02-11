@@ -129,7 +129,7 @@ def category_list(request):
 
 def category_detail(request, pk):
     category = get_object_or_404(Category, pk=pk)
-    recipes = category.recipe_set.all()
+    recipes = category.recipes.all()
     return render(request, 'recipes/category_detail.html', {'category': category, 'recipes': recipes})
 
 def tag_detail(request, pk):
